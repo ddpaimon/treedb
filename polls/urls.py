@@ -5,6 +5,7 @@ from . import views
 
 # Create your urls here.
 
+app_name = 'polls'
 urlpatterns = [
     # ex: /polls/
     url(r'^$', views.index, name='index'),
