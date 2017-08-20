@@ -23,3 +23,7 @@ def index(request):
 def detail(request, question_id):
     node = get_object_or_404(Node, pk=question_id)
     return render(request, 'treesite/detail.html', {'node': node})
+
+
+def free(request):
+    return HttpResponse(request)
