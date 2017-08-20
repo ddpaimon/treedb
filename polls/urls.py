@@ -15,5 +15,5 @@ urlpatterns = [
     # ex: /polls/5/vote/
     url(r'^(?P<question_id>[0-9]+)/vote/$', views.vote, name='vote'),
     # ex: /poll/lol/
-    url(r'^lol/$', include('aut.urls'))
+    url(r'^lol/', include('aut.urls'))
 ]
