@@ -9,7 +9,9 @@ from django.db import models
 class Node(models.Model):
     name = models.CharField(max_length=20)
     root = models.ForeignKey('self', on_delete=models.CASCADE, verbose_name='parent', related_name='child', blank=True, null=True)
-    children = list()
 
     def __str__(self):
         return str(self.name)
+
+    def get_children(self):
+        return self.objects.all()

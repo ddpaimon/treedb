@@ -3,9 +3,10 @@ from __future__ import unicode_literals
 
 from django.shortcuts import get_object_or_404, render
 from django.template import loader
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from .models import Node
+from .serializers import NodeSerializer
 
 # Create your views here.
 
@@ -33,5 +34,14 @@ def children(request, question_id):
     }
     return HttpResponse(template.render(context, request))
 
+
 def free(request):
     return HttpResponse(request)
+
+
+def tree(request):
+    nodes = Node.objects.all()
+    for node in nodes:
+        print(node.name)
+    serialized_nodes = NodeSerializer(nodes, many=True)
+    return JsonResponse(serialized_nodes.data, safe=False)
