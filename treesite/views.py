@@ -25,5 +25,13 @@ def detail(request, question_id):
     return render(request, 'treesite/detail.html', {'node': node})
 
 
+def children(request, question_id):
+    children_list = Node.objects.filter(root=question_id)
+    template = loader.get_template('treesite/children.html')
+    context = {
+        'children': children_list
+    }
+    return HttpResponse(template.render(context, request))
+
 def free(request):
     return HttpResponse(request)
