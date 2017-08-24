@@ -7,6 +7,7 @@ from django.http import HttpResponse, JsonResponse
 
 from .models import Node
 from .serializers import NodeSerializer
+from . import serializers
 
 # Create your views here.
 
@@ -39,9 +40,7 @@ def free(request):
     return HttpResponse(request)
 
 
-def tree(request):
-    nodes = Node.objects.all()
-    for node in nodes:
-        print(node.name)
-    serialized_nodes = NodeSerializer(nodes, many=True)
-    return JsonResponse(serialized_nodes.data, safe=False)
+def tree(request, node_id):
+    node = Node.objects.get(id=node_id)
+    result_data = serializers.to_json(node)
+    return JsonResponse(result_data, safe=False)

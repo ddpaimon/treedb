@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^(?P<question_id>[0-9]+)/$', views.detail, name='detail'),
     url(r'^(?P<question_id>[0-9]+)/children/$', views.children, name='children'),
-    url(r'^tree/$', views.tree, name='tree'),
+    # url(r'^tree/$', views.tree, name='tree'),
+    url(r'^tree/(?P<node_id>[0-9]+)/$', views.tree, name='subtree'),
     url(r'^free/$', views.free, name='free'),
 ]

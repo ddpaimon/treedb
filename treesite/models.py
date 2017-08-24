@@ -7,11 +7,15 @@ from django.db import models
 
 
 class Node(models.Model):
+    """
+    Node class for tree.
+    """
     name = models.CharField(max_length=20)
+    deleted = models.BooleanField(default=False)
     root = models.ForeignKey('self', on_delete=models.CASCADE, verbose_name='parent', related_name='child', blank=True, null=True)
 
     def __str__(self):
         return str(self.name)
 
     def get_children(self):
-        return self.objects.all()
+        return self.objects.filter(root=self.id)
