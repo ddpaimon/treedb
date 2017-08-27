@@ -33,7 +33,7 @@ def timeit(method):
 
 
 def index(request):
-    print(request)
+    # print(request)
     all_nodes = Node.objects.all()
     template = loader.get_template('treesite/index.html')
     context = {
@@ -75,7 +75,7 @@ def node(request, node_id):
 @api_view(['GET'])
 def tree(requets):
     q_all_root = Node.objects.filter(root=None)
-    print(q_all_root)
+    # print(q_all_root)
     tree_data = {'tree': list()}
     if q_all_root.exists():
         for root_node in q_all_root.iterator():
