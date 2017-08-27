@@ -50,7 +50,7 @@
          "id": 5,
          "root": 2,
          "name": "Node5",
-         "deleted": false,
+         "deleted": true,
          "children": [
             {
                "id": 8,
