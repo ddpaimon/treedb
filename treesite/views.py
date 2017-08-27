@@ -32,41 +32,25 @@ def timeit(method):
     return timed
 
 
-def index(request):
-    # print(request)
-    all_nodes = Node.objects.all()
-    template = loader.get_template('treesite/index.html')
-    context = {
-        'nodes': all_nodes,
-    }
-    return HttpResponse(template.render(context, request))
-
-
-def detail(request, question_id):
-    node_object = get_object_or_404(Node, pk=question_id)
-    return render(request, 'treesite/detail.html', {'node': node_object})
-
-
-def children(request, question_id):
-    children_list = Node.objects.filter(root=question_id)
-    template = loader.get_template('treesite/children.html')
-    context = {
-        'children': children_list
-    }
-    return HttpResponse(template.render(context, request))
-
-
-def free(request):
-    objs = Node.objects
-    all = objs.all()
-    print(all)
-    n1 = objs.get(id=1)
-    print(n1)
-    return HttpResponse(request)
+@api_view(['GET'])
+def clear(request):
+    """
+    Remove all nodes from database
+    :param request:
+    :return:
+    """
+    Node.objects.all().delete()
+    return JsonResponse({'response': 'clear'})
 
 
 @api_view(['GET'])
 def node(request, node_id):
+    """
+    Return node detail
+    :param request:
+    :param node_id:
+    :return:
+    """
     node_object = Node.objects.get(id=node_id)
     node_ser = NodeSerializer(node_object)
     return JsonResponse(node_ser.data)
@@ -74,6 +58,11 @@ def node(request, node_id):
 
 @api_view(['GET'])
 def tree(requets):
+    """
+    Return all tree from database
+    :param requets:
+    :return:
+    """
     q_all_root = Node.objects.filter(root=None)
     # print(q_all_root)
     tree_data = {'tree': list()}
@@ -85,6 +74,12 @@ def tree(requets):
 
 @api_view(['GET'])
 def subtree(request, node_id):
+    """
+    Return subtree started from target node
+    :param request:
+    :param node_id:
+    :return:
+    """
     node_data = get_object_or_404(Node, id=node_id)
     result_data = serializers.to_json(node_data)
     return JsonResponse(result_data)
@@ -92,6 +87,11 @@ def subtree(request, node_id):
 
 @api_view(['POST'])
 def update(request):
+    """
+    Update, create and remove subtrees
+    :param request:
+    :return:
+    """
     tree_data = request.data['tree']
     db_node_objects = Node.objects
     updating_tree_data = read_tree(update_or_create_node, tree_data, db_node_objects)
@@ -117,6 +117,7 @@ def read_subtree(func, node_data, db_node_objects):
     # print("Result: ", res)
     return res
 
+
 @timeit
 def update_deleted(node_data, db_node_objects):
     if node_data['id'] is not None:
@@ -134,6 +135,7 @@ def update_or_create_node(node_data, db_node_objects):
             node_data = update_node(node_data, db_node_objects)
     return node_data
 
+
 @timeit
 def create_node(node_data, db_node_objects):
     # print("Create node: ", node_data['name'])
@@ -149,6 +151,7 @@ def create_node(node_data, db_node_objects):
     node_data = NodeSerializer(node_object).data
     return node_data
 
+
 @timeit
 def update_node(node_data, db_node_objects):
     # print("Update node: ", node_data['name'])
@@ -161,6 +164,7 @@ def update_node(node_data, db_node_objects):
         delete_subtree(node_object, db_node_objects)
     node_data = NodeSerializer(node_object).data
     return node_data
+
 
 @timeit
 def delete_subtree(node_object, db_node_objects):
