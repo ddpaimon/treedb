@@ -1,0 +1,65 @@
+{
+   "tree": [
+      {
+         "id": 4,
+         "root": 2,
+         "name": "Node4",
+         "deleted": false,
+         "children": [
+            {
+               "id": 6,
+               "root": 4,
+               "name": "Node6",
+               "deleted": false,
+               "children": [
+                 {
+                   "id": null,
+                   "root": 6,
+                   "name": "NodeKN",
+                   "deleted": false,
+                   "children": []
+                 }
+               ]
+            }
+         ]
+      },
+      {
+         "id": 1,
+         "root": null,
+         "name": "Node1",
+         "deleted": false,
+         "children": [
+            {
+               "id": 3,
+               "root": 1,
+               "name": "Node3",
+               "deleted": false,
+               "children": [
+                  {
+                     "id": 7,
+                     "root": 3,
+                     "name": "Node7",
+                     "deleted": false,
+                     "children": []
+                  }
+               ]
+            }
+         ]
+      },
+      {
+         "id": 5,
+         "root": 2,
+         "name": "Node5",
+         "deleted": false,
+         "children": [
+            {
+               "id": 8,
+               "root": 5,
+               "name": "Node8",
+               "deleted": false,
+               "children": []
+            }
+         ]
+      }
+   ]
+}
