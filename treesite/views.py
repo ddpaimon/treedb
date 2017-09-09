@@ -101,18 +101,34 @@ def update(request):
 
 
 def read_tree(func, tree_data, db_node_objects):
+    """
+    Recursive read forest
+    :param func:
+    :param tree_data:
+    :param db_node_objects:
+    :return:
+    """
     res = list()
     for root_node in tree_data:
         res.append(read_subtree(func, root_node, db_node_objects))
     return res
 
 
-def read_subtree(func, node_data, db_node_objects):
-    children_data = node_data['children']
-    node_data.pop('children', None)
-    res = func(node_data, db_node_objects)
+def read_subtree(func, root_node, db_node_objects):
+    """
+    Recursive read subtree
+    :param func:
+    :param root_node:
+    :param db_node_objects:
+    :return:
+    """
+    node_data = root_node
+    # children_data = node_data['children']
+    # node_data.pop('children', None)
+    res = dict()
+    res['node'] = func(node_data['node'], db_node_objects)
     res['children'] = list()
-    for child_data in children_data:
+    for child_data in root_node['children']:
         res['children'].append(read_subtree(func, child_data, db_node_objects))
     # print("Result: ", res)
     return res

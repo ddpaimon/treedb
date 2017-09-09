@@ -16,15 +16,16 @@ def to_json(node):
     :param node: Node
     :return:
     """
-    data = NodeSerializer(node).data
-    data["children"] = list()
+    res = dict()
+    res['node'] = NodeSerializer(node).data
+    res['children'] = list()
     children = Node.objects.filter(root=node.id)
     # for child in children.iterator():
     #     print(child)
     if children.exists():
         for child in children.iterator():
-            data["children"].append(to_json(child))
-    return data
+            res['children'].append(to_json(child))
+    return res
 
 
 class NodeSerializer(serializers.ModelSerializer):
