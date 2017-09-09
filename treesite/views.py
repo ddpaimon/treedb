@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import get_object_or_404, render
-from django.template import loader
-from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 
 from .models import Node
 from .serializers import NodeSerializer
@@ -86,13 +85,14 @@ def subtree(request, node_id):
 
 
 @api_view(['POST'])
+@timeit
 def update(request):
     """
     Update, create and remove subtrees
     :param request:
     :return:
     """
-    tree_data = request.data['tree']
+    tree_data = request.data
     db_node_objects = Node.objects
     updating_tree_data = read_tree(update_or_create_node, tree_data, db_node_objects)
     db_node_objects = Node.objects
@@ -114,7 +114,7 @@ def read_tree(func, tree_data, db_node_objects):
     return res
 
 
-def read_subtree(func, root_node, db_node_objects):
+def read_subtree(func, root_node, db_node_objects, root_id=None):
     """
     Recursive read subtree
     :param func:
@@ -123,54 +123,53 @@ def read_subtree(func, root_node, db_node_objects):
     :return:
     """
     node_data = root_node
-    # children_data = node_data['children']
-    # node_data.pop('children', None)
     res = dict()
-    res['node'] = func(node_data['node'], db_node_objects)
+    res['node'] = func(node_data['node'], db_node_objects, root_id)
     res['children'] = list()
     for child_data in root_node['children']:
-        res['children'].append(read_subtree(func, child_data, db_node_objects))
-    # print("Result: ", res)
+        res['children'].append(read_subtree(func, child_data, db_node_objects, res['node']['id']))
     return res
 
 
-@timeit
-def update_deleted(node_data, db_node_objects):
+def update_deleted(node_data, db_node_objects, root_id=None):
     if node_data['id'] is not None:
         node_object = db_node_objects.get(id=node_data['id'])
         node_data['deleted'] = node_object.deleted
     return node_data
 
 
-def update_or_create_node(node_data, db_node_objects):
-    node_ser = NodeSerializer(data=node_data)
-    if node_ser.is_valid():
-        if node_data['id'] is None:
-            node_data = create_node(node_data, db_node_objects)
-        else:
+def update_or_create_node(node_data, db_node_objects, root_id):
+    if node_data['id'] is None or not db_node_objects.filter(id=node_data['id']).exists():
+        node_data['id'] = None
+        node_data['root'] = None
+        node_ser = NodeSerializer(data=node_data)
+        if node_ser.is_valid():
+            if node_data['deleted'] is False:
+                node_data = create_node(node_data, db_node_objects, root_id=root_id)
+    else:
+        print(node_data)
+        node_ser = NodeSerializer(data=node_data)
+        if node_ser.is_valid():
             node_data = update_node(node_data, db_node_objects)
     return node_data
 
 
-@timeit
-def create_node(node_data, db_node_objects):
-    # print("Create node: ", node_data['name'])
+def create_node(node_data, db_node_objects, root_id):
     node_object = Node()
     node_object.deleted = node_data['deleted']
     node_object.name = node_data['name']
-    parent_node = db_node_objects.get(id=node_data['root'])
+    parent_node = db_node_objects.get(id=root_id) if root_id is not None else root_id
     node_object.root = parent_node
-    if parent_node.deleted:
-        node_object.deleted = parent_node.deleted
+    if parent_node is not None:
+        if parent_node.deleted:
+            node_object.deleted = parent_node.deleted
     if not testing:
         node_object.save()
     node_data = NodeSerializer(node_object).data
     return node_data
 
 
-@timeit
 def update_node(node_data, db_node_objects):
-    # print("Update node: ", node_data['name'])
     node_object = db_node_objects.get(id=node_data['id'])
     if node_object.name != node_data['name']:
         node_object.name = node_data['name']
@@ -182,12 +181,11 @@ def update_node(node_data, db_node_objects):
     return node_data
 
 
-@timeit
 def delete_subtree(node_object, db_node_objects):
     node_object.deleted = True
     if not testing:
         node_object.save()
     node_children = db_node_objects.filter(root=node_object.id)
-    if node_children.exists:
+    if node_children.exists():
         for child in node_children.iterator():
             delete_subtree(child, db_node_objects)
