@@ -10,11 +10,14 @@ from . import serializers
 
 from rest_framework.decorators import api_view
 
+from .events import EventsManager
+
 import time
 
 # Create your views here.
 
 testing = False
+events_manager = EventsManager()
 
 
 def timeit(method):
@@ -98,6 +101,20 @@ def update(request):
     db_node_objects = Node.objects
     resulting_tree_data = read_tree(update_deleted, updating_tree_data, db_node_objects)
     return JsonResponse({'tree': resulting_tree_data})
+
+
+@api_view(['POST'])
+def update_events(request):
+    """
+    Update tree with events
+    :param request:
+    :return:
+    """
+    events_data = request.data
+    events_manager.deserialize_event(events_data)
+    # print(events_manager.serialize_events())
+    events_manager.apply()
+    return JsonResponse({'nodes': []})
 
 
 def read_tree(func, tree_data, db_node_objects):

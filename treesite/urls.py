@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^(?P<node_id>[0-9]+)/$', views.node, name='node'),
     url(r'^update/$', views.update, name='tree_update'),
     url(r'^clear/$', views.clear, name='tree_clear'),
+    url(r'^update/events/$', views.update_events, name='tree_update_events')
 ]
