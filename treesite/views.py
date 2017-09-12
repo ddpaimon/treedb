@@ -161,8 +161,8 @@ def update_or_create_node(node_data, db_node_objects, root_id):
         node_data['root'] = None
         node_ser = NodeSerializer(data=node_data)
         if node_ser.is_valid():
-            if node_data['deleted'] is False:
-                node_data = create_node(node_data, db_node_objects, root_id=root_id)
+           # if node_data['deleted'] is False:
+           node_data = create_node(node_data, db_node_objects, root_id=root_id)
     else:
         print(node_data)
         node_ser = NodeSerializer(data=node_data)
