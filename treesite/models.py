@@ -10,7 +10,7 @@ class Node(models.Model):
     """
     Node class for tree.
     """
-    name = models.CharField(max_length=100000000)
+    name = models.CharField(max_length=1000)
     deleted = models.BooleanField(default=False)
     root = models.ForeignKey('self', on_delete=models.CASCADE, verbose_name='parent', related_name='child', blank=True, null=True)
 
