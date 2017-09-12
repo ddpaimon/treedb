@@ -149,14 +149,14 @@ def read_subtree(func, root_node, db_node_objects, root_id=None):
 
 
 def update_deleted(node_data, db_node_objects, root_id=None):
-    if node_data['id'] is not None:
+    if 'id' not in node_data or node_data['id'] is not None:
         node_object = db_node_objects.get(id=node_data['id'])
         node_data['deleted'] = node_object.deleted
     return node_data
 
 
 def update_or_create_node(node_data, db_node_objects, root_id):
-    if node_data['id'] is None or not db_node_objects.filter(id=node_data['id']).exists():
+    if 'id' not in node_data or node_data['id'] is None or not db_node_objects.filter(id=node_data['id']).exists():
         node_data['id'] = None
         node_data['root'] = None
         node_ser = NodeSerializer(data=node_data)
